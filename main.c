@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "includes/header.h"
 
 int main(int argc, char** argv){
-	printf("Hello world !");
+	hello();
 	return EXIT_SUCCESS;
 }

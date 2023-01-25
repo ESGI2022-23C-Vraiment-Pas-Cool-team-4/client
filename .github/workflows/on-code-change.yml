@@ -31,6 +31,4 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          ls -al
-          cd src
           make

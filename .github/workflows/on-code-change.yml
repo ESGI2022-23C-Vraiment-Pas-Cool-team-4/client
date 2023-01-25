@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+        with:
+          ref: CICD
       - name: Navigate to src folder
         shell: bash
         run: |
@@ -24,6 +26,8 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+        with:
+          ref: CICD
       - name: Build
         shell: bash
         run: |

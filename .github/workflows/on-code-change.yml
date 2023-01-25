@@ -28,4 +28,4 @@ jobs:
         shell: bash
         run: |
           cd src
-          gcc main.c -o exec
+          make

@@ -1,0 +1,30 @@
+name: On Code Change
+
+on:
+  pull_request:
+    type: [opened, reopened, synchronize]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Navigate to src folder
+        shell: bash
+        run: |
+          cd src
+      - name: C/C++ Linter
+        uses: cpp-linter/cpp-linter-action@v2.4.0
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Folders gestion
+        shell: bash
+      - name: Build
+        shell: bash
+        run: |
+          gcc main.c -o exec

@@ -16,6 +16,8 @@ jobs:
           cd src
       - name: C/C++ Linter
         uses: cpp-linter/cpp-linter-action@v2.4.0
+        with:
+          style: file
   build:
     needs: lint
     runs-on: ubuntu-latest

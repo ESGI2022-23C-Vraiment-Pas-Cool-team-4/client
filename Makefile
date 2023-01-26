@@ -16,7 +16,7 @@ COMPILER_FLAGS = -Wall
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = exec
 
-LINKE_FLAGS = $(shell pkg-config --libs gtk+-3.0)
+LINKER_FLAGS = $(shell pkg-config --libs gtk+-3.0)
 
 
 

@@ -1,0 +1,28 @@
+name: On Code Change
+
+on:
+  pull_request:
+    type: [opened, reopened, synchronize]
+
+jobs:
+  lint:
+    name: Linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: C/C++ Linter
+        uses: cpp-linter/cpp-linter-action@v2.4.0
+        with:
+          style: file
+  build:
+    name: Build
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Build
+        shell: bash
+        run: |
+          make

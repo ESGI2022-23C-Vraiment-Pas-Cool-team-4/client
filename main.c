@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include "header.h"
+#include "includes/header.h"
 
 int main(int argc, char** argv){
 	GtkApplication *app;

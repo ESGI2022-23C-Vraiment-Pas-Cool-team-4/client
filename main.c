@@ -3,6 +3,8 @@
 #include <gtk/gtk.h>
 
 int main(int argc, char** argv){
+	GtkWidget *main_window;
+
 	gtk_init(&argc, &argv);
 
 	main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -10,6 +12,6 @@ int main(int argc, char** argv){
 	gtk_widget_show(window);
 
 	gtk_main();
-	
+
 	return EXIT_SUCCESS;
 }

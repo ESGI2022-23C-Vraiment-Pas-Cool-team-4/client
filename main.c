@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
+#include "header.h"
 
 void activate(GtkApplication* app, gpointer user_data){
 	GtkWidget *mainWindow;

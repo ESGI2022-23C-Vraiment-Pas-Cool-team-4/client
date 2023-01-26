@@ -9,7 +9,7 @@ int main(int argc, char** argv){
 
 	main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title(GTK_WINDOW(main_window), "Hello World");
-	gtk_widget_show(window);
+	gtk_widget_show(main_window);
 
 	gtk_main();
 

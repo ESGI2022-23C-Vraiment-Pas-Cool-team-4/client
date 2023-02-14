@@ -15,7 +15,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include "../sockets.h"
+#include "../../includes/sockets.h"
 
 int charToInt(char* str){
     int result = 0;

@@ -10,7 +10,7 @@
 #include <winsock2.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "../sockets.h"
+#include "../../sockets.h"
 
 #pragma comment(lib, "ws2_32.lib")
 

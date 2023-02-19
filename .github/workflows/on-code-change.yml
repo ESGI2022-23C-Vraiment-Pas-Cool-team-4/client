@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     name: Build
-    needs: lint
     runs-on: windows-latest
     steps:
       - name: Get code

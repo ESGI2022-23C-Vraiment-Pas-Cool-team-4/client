@@ -15,8 +15,8 @@ jobs:
       - name: Build
         shell: bash
         run: |
-        mkdir build
-        ./build.bat
+          mkdir build
+          ./build.bat
       - name: upload
         uses: actions/upload-artifact@v3
         with:

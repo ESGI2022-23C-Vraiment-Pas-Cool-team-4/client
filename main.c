@@ -10,6 +10,7 @@
 void displayLogin(HWND hHotel);
 void RegisterLoginClass(HINSTANCE hInst);
 void menus(HWND hHotel);
+void buttons(HWND hHotel);
 
 LRESULT CALLBACK LoginProcedure(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK HotelProcedure(HWND, UINT, WPARAM, LPARAM);
@@ -54,25 +55,26 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdsho
 LRESULT CALLBACK HotelProcedure(HWND hHotel, UINT msg, WPARAM wp, LPARAM lp){
     switch(msg){
         case WM_CREATE:
+            buttons(hHotel);
             menus(hHotel);
             displayLogin(hHotel);
             break;
         case WM_COMMAND:
             switch(wp){
                 case RESERVATION_NEW:
-                    MessageBox(hHotel, L"Info", L"New Reservation", MB_OK | MB_ICONINFORMATION);
+                    MessageBox(hHotel, "Info", "New Reservation", MB_OK | MB_ICONINFORMATION);
                     break;
                 case SEARCH_HOTEL:
-                    MessageBox(hHotel, L"Info", L"Search Hotel", MB_OK | MB_ICONINFORMATION);
+                    MessageBox(hHotel, "Info", "Search Hotel", MB_OK | MB_ICONINFORMATION);
                     break;
                 case SEARCH_ROOM:
-                    MessageBox(hHotel, L"Info", L"Search Room", MB_OK | MB_ICONINFORMATION);
+                    MessageBox(hHotel, "Info", "Search Room", MB_OK | MB_ICONINFORMATION);
                     break;
                 case SEARCH_RESERVATION:
-                    MessageBox(hHotel, L"Info", L"Search Reservation", MB_OK | MB_ICONINFORMATION);
+                    MessageBox(hHotel, "Info", "Search Reservation", MB_OK | MB_ICONINFORMATION);
                     break;
                 case LOGOUT:
-                    MessageBox(hHotel, L"Info", L"Log out", MB_OK | MB_ICONINFORMATION);
+                    MessageBox(hHotel, "Info", "Log out", MB_OK | MB_ICONINFORMATION);
                     break;
             }
             break;
@@ -165,4 +167,11 @@ void menus(HWND hHotel){
     AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR) hUserMenu, "User");
 
     SetMenu(hHotel, hMenuBar);
+}
+
+void buttons(HWND hHotel){
+    CreateWindowW(L"Button", L"New Reservation", WS_VISIBLE | WS_CHILD, 260, 60, 200, 50, hHotel, (HMENU)RESERVATION_NEW, NULL, NULL);
+    CreateWindowW(L"Button", L"Search Hotel", WS_VISIBLE | WS_CHILD, 260, 150, 200, 50, hHotel, (HMENU)SEARCH_HOTEL, NULL, NULL);
+    CreateWindowW(L"Button", L"Search Room", WS_VISIBLE | WS_CHILD, 260, 240, 200, 50, hHotel, (HMENU)SEARCH_ROOM, NULL, NULL);
+    CreateWindowW(L"Button", L"Search Reservation", WS_VISIBLE | WS_CHILD, 260, 330, 200, 50, hHotel, (HMENU)SEARCH_RESERVATION, NULL, NULL);
 }

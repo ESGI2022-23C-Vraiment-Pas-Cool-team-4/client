@@ -9,14 +9,21 @@
 
 void displayLogin(HWND hHotel);
 void RegisterLoginClass(HINSTANCE hInst);
+void menus(HWND hHotel);
 
-LRESULT CALLBACK LoginProcedure(HWND hHotel, UINT msg, WPARAM wp, LPARAM lp);
+LRESULT CALLBACK LoginProcedure(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK HotelProcedure(HWND, UINT, WPARAM, LPARAM);
 
 HWND hHotelWindow, hUsername, hPassword;
+HMENU hMenuBar; 
 
 enum AppMessages{
-    LOGIN_BUTTON
+    LOGIN_BUTTON,
+    RESERVATION_NEW,
+    SEARCH_HOTEL,
+    SEARCH_ROOM,
+    SEARCH_RESERVATION,
+    LOGOUT
 };
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow){
@@ -47,7 +54,27 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdsho
 LRESULT CALLBACK HotelProcedure(HWND hHotel, UINT msg, WPARAM wp, LPARAM lp){
     switch(msg){
         case WM_CREATE:
+            menus(hHotel);
             displayLogin(hHotel);
+            break;
+        case WM_COMMAND:
+            switch(wp){
+                case RESERVATION_NEW:
+                    MessageBox(hHotel, L"Info", L"New Reservation", MB_OK | MB_ICONINFORMATION);
+                    break;
+                case SEARCH_HOTEL:
+                    MessageBox(hHotel, L"Info", L"Search Hotel", MB_OK | MB_ICONINFORMATION);
+                    break;
+                case SEARCH_ROOM:
+                    MessageBox(hHotel, L"Info", L"Search Room", MB_OK | MB_ICONINFORMATION);
+                    break;
+                case SEARCH_RESERVATION:
+                    MessageBox(hHotel, L"Info", L"Search Reservation", MB_OK | MB_ICONINFORMATION);
+                    break;
+                case LOGOUT:
+                    MessageBox(hHotel, L"Info", L"Log out", MB_OK | MB_ICONINFORMATION);
+                    break;
+            }
             break;
         case WM_DESTROY:
             PostQuitMessage(0);
@@ -73,19 +100,21 @@ void RegisterLoginClass(HINSTANCE hInst){
 
 LRESULT CALLBACK LoginProcedure(HWND hLogin, UINT msg, WPARAM wp, LPARAM lp){
     switch(msg){
+        case WM_CLOSE:
+            PostQuitMessage(0);
+            break;
         case WM_DESTROY:
             DestroyWindow(hLogin);
-            EnableWindow(hHotelWindow, TRUE);
             break;
         case WM_COMMAND:
             switch(wp){
                 case LOGIN_BUTTON:;
-                    char username[40], password[40], print[80];
+                    char username[40], password[40];
                     GetWindowText(hUsername, username, 40);
                     GetWindowText(hPassword, password, 40);
                     loginLabel: if(login(username, password)){
-                        DestroyWindow(hLogin);
                         EnableWindow(hHotelWindow, TRUE);
+                        DestroyWindow(hLogin);
                     } else{
                         int val = MessageBoxW(hLogin, L"Login failed !", L"ERROR", MB_CANCELTRYCONTINUE | MB_ICONERROR);
                         switch(val){
@@ -98,10 +127,10 @@ LRESULT CALLBACK LoginProcedure(HWND hLogin, UINT msg, WPARAM wp, LPARAM lp){
                                 break;
                         }
                     }
+                    break;
             }
             break;
         default:
-            EnableWindow(hHotelWindow, TRUE);
             return DefWindowProcW(hLogin, msg, wp, lp);
     }
     return 0;
@@ -115,4 +144,25 @@ void displayLogin(HWND hHotel){
     hPassword = CreateWindowW(L"Edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER, 100, 140, 200, 30, hLogin, NULL, NULL, NULL);
     CreateWindowW(L"Button", L"Log In", WS_VISIBLE | WS_CHILD, 150, 200, 100, 50, hLogin, (HMENU) LOGIN_BUTTON, NULL, NULL);
     EnableWindow(hHotel, FALSE);
+}
+
+void menus(HWND hHotel){
+    hMenuBar = CreateMenu();
+    HMENU hNewMenu = CreateMenu();
+    HMENU hSearchMenu = CreateMenu();
+    HMENU hUserMenu = CreateMenu();
+
+    AppendMenu(hNewMenu, MF_STRING, RESERVATION_NEW, "New Reservation");
+    AppendMenu(hNewMenu, MF_POPUP, (UINT) hSearchMenu, "Search");
+
+    AppendMenu(hSearchMenu, MF_STRING, SEARCH_HOTEL, "Hotel");
+    AppendMenu(hSearchMenu, MF_STRING, SEARCH_ROOM, "Room");
+    AppendMenu(hSearchMenu, MF_STRING, SEARCH_RESERVATION, "Reservation");
+
+    AppendMenu(hUserMenu, MF_STRING, LOGOUT, "Logout");
+
+    AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR) hNewMenu, "New");
+    AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR) hUserMenu, "User");
+
+    SetMenu(hHotel, hMenuBar);
 }

@@ -68,7 +68,7 @@ int client(char *query) {
     }
 
     // opening the conf file to get the ip address of the server and the port number
-    FILE* config_file = fopen("conf/server.conf", "r");
+    FILE* config_file = fopen("../../conf/server.conf", "r");
     
     if (config_file == NULL) {
         printf("Error opening config file\n");

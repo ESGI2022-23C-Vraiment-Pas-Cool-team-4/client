@@ -12,6 +12,7 @@ jobs:
       - name: Get code
         uses: actions/checkout@v3
       - name: Build
-        shell: Powershell
+        shell: bash
         run: |
-          make
+          mkdir build
+          ./build.bat

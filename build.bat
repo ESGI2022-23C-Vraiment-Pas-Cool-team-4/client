@@ -1,0 +1,1 @@
+gcc main.c src/login.c includes/internal.h -o build/exec.exe

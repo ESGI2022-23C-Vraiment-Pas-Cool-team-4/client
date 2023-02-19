@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "includes/internal.h"
 
@@ -82,10 +83,21 @@ LRESULT CALLBACK LoginProcedure(HWND hLogin, UINT msg, WPARAM wp, LPARAM lp){
                     char username[40], password[40], print[80];
                     GetWindowText(hUsername, username, 40);
                     GetWindowText(hPassword, password, 40);
-                    if(login(username, password))
-                        MessageBoxW( hLogin, L"ok", L"ok", MB_OK);
-                    else
-                        MessageBoxW( hLogin, L"No", L"No", MB_OK);
+                    loginLabel: if(login(username, password)){
+                        DestroyWindow(hLogin);
+                        EnableWindow(hHotelWindow, TRUE);
+                    } else{
+                        int val = MessageBoxW(hLogin, L"Login failed !", L"ERROR", MB_CANCELTRYCONTINUE | MB_ICONERROR);
+                        switch(val){
+                            case IDTRYAGAIN:
+                                goto loginLabel;
+                                break;
+                            case IDCANCEL:
+                                PostQuitMessage(0);
+                            case IDCONTINUE:
+                                break;
+                        }
+                    }
             }
             break;
         default:

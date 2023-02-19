@@ -6,15 +6,12 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <winsock2.h>
-#include <stdlib.h>
-#include <pthread.h>
 #include "../../includes/sockets.h"
 
 #pragma comment(lib, "ws2_32.lib")
-
-
 
 int charToInt(char* str) {
     int result = 0;

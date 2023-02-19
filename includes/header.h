@@ -1,2 +1,2 @@
 void activate(GtkApplication* app, gpointer user_data);
-int client(char *query)
+int client(char *query);

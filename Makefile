@@ -16,17 +16,13 @@ COMPILER_FLAGS = -Wall -mwindows
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = exec
 
-LINKER_FLAGS = $(shell pkg-config --libs gtk+-3.0)
-
-
-
 #This is the target that compiles our executable
 # all : $(OBJS)
 # 	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(BUILD_DIR)/$(OBJ_NAME)
 
 # The final build step.
 $(BUILD_DIR)/$(OBJ_NAME): $(OBJS)
-	$(CC) $(OBJS) $(COMPILER_FLAGS) $(INCLUDES) -o $@ $(LINKER_FLAGS)
+	$(CC) $(OBJS) $(COMPILER_FLAGS) $(INCLUDES) -o $@
 
 # Build step for C source
 $(BUILD_DIR)/%.c.o: %.c

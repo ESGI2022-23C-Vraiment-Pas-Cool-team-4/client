@@ -1,17 +1,38 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <gtk/gtk.h>
-#include "includes/header.h"
+#include <windows.h>
 
-int main(int argc, char** argv){
-	GtkApplication *app;
-	int status;
+LRESULT CALLBACK HotelProcedure(HWND, UINT, WPARAM, LPARAM);
 
-	gtk_init(&argc, &argv);
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow){
+	
+    WNDCLASSW HotelClass = {0};
 
-	app = gtk_application_new("org.esgi.hotel", G_APPLICATION_FLAGS_NONE);
-	g_signal_connect (app, "activate", G_CALLBACK(activate), NULL);
-	status = g_application_run(G_APPLICATION(app), argc, argv);
-	g_object_unref(app);
-	return status;
+	HotelClass.hbrBackground = (HBRUSH) COLOR_WINDOW;
+	HotelClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	HotelClass.hInstance = hInst;
+	HotelClass.lpszClassName = L"HotelClass";
+	HotelClass.lpfnWndProc = HotelProcedure;
+
+	if (!RegisterClassW(&HotelClass)) return -1;
+
+		CreateWindowW(L"HotelClass", L"Hotel Manager", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 720, 576, NULL, NULL, NULL, NULL);
+
+	    MSG msg = {0};
+
+    while(GetMessage(&msg, NULL, NULL, NULL)){
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    
+    return 0;
+}
+
+LRESULT CALLBACK HotelProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp){
+    switch(msg){
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            break;
+        default:
+            return DefWindowProcW(hWnd, msg, wp, lp);
+    }
+    return 0;
 }

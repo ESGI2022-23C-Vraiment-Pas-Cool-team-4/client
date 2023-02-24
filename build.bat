@@ -1,1 +1,1 @@
-gcc -Wall -mwindows -lws2_32 main.c src/login.c includes/internal.h -o build/exec.exe
+gcc -Wall -mwindows main.c src/login.c src/query.c -o build/exec.exe -lWs2_32

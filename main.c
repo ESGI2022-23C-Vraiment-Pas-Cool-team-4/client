@@ -1,10 +1,14 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <winsock2.h>
 
 #include "includes/internal.h"
 #include "includes/query.h"
 
+#pragma comment(lib, "ws2_32.lib")
+
+#define PORT 10000
 #define HOTEL_WINDOW_WIDTH 720
 #define HOTEL_WINDOW_HEIGTH 576
 
@@ -23,9 +27,16 @@ LRESULT CALLBACK HotelProcedure(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK ReservationProcedure(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK AdminWindowProcedure(HWND, UINT, WPARAM, LPARAM);
 
+
+    WSADATA wsa;
+    SOCKET sock;
+    struct sockaddr_in server;
+    char message[1000];
+    char buffer[1024];
+
 int ADMIN_ACCESS = 0;
 
-HWND hHotelWindow, hUsername, hPassword, hReservationNew, hTypeRoom, hNumberStars, hDateArrival, hDateDeparture;
+HWND hHotelWindow, hUsername, hPassword, hReservationNew, hTypeRoom, hNumberStars, hDateArrival, hDateDeparture, hUsernameAdd, hPasswordAdd;
 HMENU hMenuBar; 
 
 enum AppMessages{
@@ -33,11 +44,41 @@ enum AppMessages{
     RESERVATION_NEW,
     LOGOUT,
     SEARCH_RESERVATION_NEW,
-    ADMIN_PART_ACCESS
+    ADMIN_PART_ACCESS,
+    ADD_USER
 };
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow){
-	
+	 
+    // Initialisation de la bibliothèque Winsock
+    if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
+    {
+        printf("Erreur d'initialisation de la bibliothèque Winsock. Code d'erreur : %d\n", WSAGetLastError());
+        return 1;
+    }
+
+    // Création du socket
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
+    {
+        printf("Erreur de création du socket. Code d'erreur : %d\n", WSAGetLastError());
+        WSACleanup();
+        return 1;
+    }
+
+    // Configuration de l'adresse du serveur
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = inet_addr("141.94.70.142"); // adresse IP locale
+    server.sin_port = htons(PORT);
+
+    // Connexion au serveur
+    if (connect(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
+    {
+        printf("Erreur de connexion. Code d'erreur : %d\n", WSAGetLastError());
+        closesocket(sock);
+        WSACleanup();
+        return 1;
+    }
+
     WNDCLASSW HotelClass = {0};
 
 	HotelClass.hbrBackground = (HBRUSH) COLOR_WINDOW;
@@ -89,6 +130,10 @@ LRESULT CALLBACK HotelProcedure(HWND hHotel, UINT msg, WPARAM wp, LPARAM lp){
             }
             break;
         case WM_DESTROY:
+            closesocket(sock);
+
+            // Libération des ressources de la bibliothèque Winsock
+            WSACleanup();
             PostQuitMessage(0);
             break;
         default:
@@ -225,6 +270,17 @@ LRESULT CALLBACK ReservationProcedure(HWND hReserv, UINT msg, WPARAM wp, LPARAM 
                     GetWindowText(hDateArrival, q.paramsValue[2], 40);
                     q.paramsName[3] = "date_fin";
                     GetWindowText(hDateDeparture, q.paramsValue[3], 40);
+                        strcpy(message, concatene(&q));
+
+                    // Envoi du message au serveur
+                    if (send(sock, message, strlen(message), 0) < 0)
+                    {
+                        printf("Erreur d'envoi du message. Code d'erreur : %d\n", WSAGetLastError());
+                        closesocket(sock);
+                        WSACleanup();
+                        PostQuitMessage(1);
+                    }
+                    DestroyWindow(hReserv);
             }
             break;
         default:
@@ -266,6 +322,40 @@ LRESULT CALLBACK AdminWindowProcedure(HWND hAdmin, UINT msg, WPARAM wp, LPARAM l
         case WM_DESTROY:
             DestroyWindow(hAdmin);
             break;
+        case WM_COMMAND:
+            switch(wp){
+                case ADD_USER:;
+                    query q;
+                    q.nbParams = 4;
+                    q.type = "CreateEmployes";
+                    q.paramsName = malloc(sizeof(char*) * q.nbParams);
+                    q.paramsValue = malloc(sizeof(char*) * q.nbParams);
+                    for(int i = 0; i < q.nbParams; i++){
+                        q.paramsValue[i] = malloc(sizeof(char) * 40);
+                        q.paramsName[i] = malloc(sizeof(char) * 40);
+                    }
+                    q.paramsName[0] = "nom";
+                    q.paramsName[1] = "password";
+                    q.paramsName[2] = "email";
+                    q.paramsName[3] = "role";
+
+                    GetWindowText(hUsernameAdd, q.paramsValue[0], 40);
+                    GetWindowText(hPasswordAdd, q.paramsValue[1], 40);
+                    q.paramsValue[2] = "NULL";
+                    q.paramsValue[3] = "1";
+                    strcpy(message, concatene(&q));
+
+                    // Envoi du message au serveur
+                    if (send(sock, message, strlen(message), 0) < 0)
+                    {
+                        printf("Erreur d'envoi du message. Code d'erreur : %d\n", WSAGetLastError());
+                        closesocket(sock);
+                        WSACleanup();
+                        PostQuitMessage(1);
+                    }
+
+            }
+            break;
         default:
             return DefWindowProcW(hAdmin, msg, wp, lp);
     }
@@ -286,7 +376,8 @@ void RegisterAdminWindowClass(HINSTANCE hInst){
 void displayAdminWindow(HWND hHotel){
     HWND hAdmin = CreateWindowW(L"AdminWindowClass", L"Admin Section", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 800, 600, hHotel, NULL, NULL, NULL);
     CreateWindowW(L"Static", L"Add User", WS_VISIBLE | WS_CHILD, 100, 100, 100, 30, hAdmin, NULL, NULL, NULL);
-    CreateWindowW(L"Edit", L"Username", WS_VISIBLE | WS_CHILD | WS_BORDER, 220, 100, 100, 30, hAdmin, NULL, NULL, NULL);
-    CreateWindowW(L"Edit", L"Password", WS_VISIBLE | WS_CHILD | WS_BORDER, 340, 100, 100, 30, hAdmin, NULL, NULL, NULL);
+    hUsernameAdd = CreateWindowW(L"Edit", L"Username", WS_VISIBLE | WS_CHILD | WS_BORDER, 220, 100, 100, 30, hAdmin, NULL, NULL, NULL);
+    hPasswordAdd = CreateWindowW(L"Edit", L"Password", WS_VISIBLE | WS_CHILD | WS_BORDER, 340, 100, 100, 30, hAdmin, NULL, NULL, NULL);
+    CreateWindowW(L"Button", L"Add", WS_VISIBLE | WS_CHILD, 460, 100, 100, 30, hAdmin, (HMENU) ADD_USER, NULL, NULL);
 
 }
